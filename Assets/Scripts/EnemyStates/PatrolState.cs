@@ -54,19 +54,21 @@ public class PatrolState : IState
 
     Vector3 SetPatrolPoint()
     {
-        //if (enemy.isSetDestination) return patrolDestination;
-        Vector2 rand = Random.insideUnitCircle * patrolRadius;
-        Vector3 patrolPoint = enemy.patrolCenterPos.position + new Vector3(rand.x, 0, rand.y);
-        NavMeshHit hit;
-        if (NavMesh.SamplePosition(patrolPoint, out hit, 1f, NavMesh.AllAreas))
+        bool inNavMesh = false;
+        int maxAttempts = 10;
+        int attempts = 0;
+        while (!inNavMesh && attempts < maxAttempts)
         {
-            patrolDestination = hit.position;
+            attempts++;
+            Vector2 rand = Random.insideUnitCircle * patrolRadius;
+            Vector3 patrolPoint = enemy.patrolCenterPos.position + new Vector3(rand.x, 0, rand.y);
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(patrolPoint, out hit, 1f, NavMesh.AllAreas))
+            {
+                patrolDestination = hit.position;
+                inNavMesh = true;
+            }
         }
-        else
-        {
-            patrolDestination = patrolPoint;
-        }
-
         enemy.isSetDestination = true;
         Debug.Log($"처음 순찰 위치 : {patrolDestination}");
         return patrolDestination;
