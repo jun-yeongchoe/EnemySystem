@@ -212,8 +212,11 @@ public class PlayerController : MonoBehaviour
     {
         hp -= dmg;
         Debug.Log("플레이어 남은체력 : " + hp);
-        if (hp <= 0) gameObject.SetActive(false);
-        Debug.Log("플레이어가 죽음");
+        if (hp <= 0)
+        {
+            gameObject.SetActive(false);
+            Debug.Log("플레이어가 죽음");
+        }
     }
 
 }

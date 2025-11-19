@@ -68,15 +68,18 @@ public class Enemy : MonoBehaviour
     {
         if (anim == null) return;
         StartCoroutine(PulseBool(AnimAttack));
-        
+        Atk();
     }
 
     public void TakeDmg(int dmg)
     {
         hp -= dmg;
         Debug.Log("적 남은체력 : " + hp);
-        if(hp <= 0) gameObject.SetActive(false);
-        Debug.Log("적이 죽음");
+        if (hp <= 0)
+        {
+            gameObject.SetActive(false);
+            Debug.Log("적이 죽음");
+        }
     }
 
     private void Atk()
@@ -85,9 +88,9 @@ public class Enemy : MonoBehaviour
         Collider[] hits = Physics.OverlapSphere(weapon.transform.position, atkRange, targetLayer);
         foreach (var hit in hits)
         {
-            if (hit.TryGetComponent<Enemy>(out var enemy))
+            if (hit.TryGetComponent<PlayerController>(out var player))
             {
-                enemy.TakeDmg(atkDmg);
+                player.TakeDmg(atkDmg);
             }
         }
     }
