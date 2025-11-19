@@ -20,8 +20,14 @@ public class PlayerController : MonoBehaviour
     CharacterController characterController;
 
     [SerializeField] Transform cameraTransform;
+    [SerializeField] Transform wand;
 
     private Vector3 velocity;
+
+    [SerializeField] private LayerMask enemyLayer;
+    private int atkDmg = 10;
+    private float atkRange = 1f;
+    private int hp = 100;
 
     //Blend, Attack, Jump
     const string AnimBlend = "Blend";
@@ -70,7 +76,10 @@ public class PlayerController : MonoBehaviour
 
         //블랜드값 업데이트
         UpdateBlendValue();
+
     }
+
+    
 
     // 1. 입력처리 메서드(플레이어가 지금 어느 방향키를 누르고 있는지 확인하는 메서드)
     Vector2 GetMovementInput()
@@ -162,6 +171,18 @@ public class PlayerController : MonoBehaviour
             StartCoroutine(PulseBool(AnimAttack));
         }
     }
+    private void Atk()
+    {
+        if (wand == null) return;
+        Collider[] hits = Physics.OverlapSphere(wand.transform.position, atkRange, enemyLayer);
+        foreach (var hit in hits)
+        {
+            if (hit.TryGetComponent<Enemy>(out var enemy))
+            {
+                enemy.TakeDmg(atkDmg);
+            }
+        }
+    }
 
     // 10. 애니메이션 블랜드 값을 업데이트 하는 메서드
     void UpdateBlendValue()
@@ -185,6 +206,17 @@ public class PlayerController : MonoBehaviour
         anim.SetBool(name, true);
         yield return null;
         anim.SetBool(name, false);
+    }
+
+    public void TakeDmg(int dmg)
+    {
+        hp -= dmg;
+        Debug.Log("플레이어 남은체력 : " + hp);
+        if (hp <= 0)
+        {
+            gameObject.SetActive(false);
+            Debug.Log("플레이어가 죽음");
+        }
     }
 
 }
